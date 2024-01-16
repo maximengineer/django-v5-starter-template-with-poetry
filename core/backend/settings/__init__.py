@@ -21,4 +21,5 @@ include(
     "custom.py",
     optional(LOCAL_SETTINGS_PATH),
     "env_vars.py",
+    "docker.py",
 )
