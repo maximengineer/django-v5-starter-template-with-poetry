@@ -17,4 +17,15 @@ poetry shell // spawn shell within virtual env
 exit // exit virtual env
 deactivate // deactivate virtual env
 
+###########################
+
 poetry run django-admin startproject backend .
+
+###########################
+
+poetry run pre-commit sample-config
+
+poetry run pre-commit install  // install hooks
+poetry run pre-commit uninstall  // uninstall hooks
+
+poetry run pre-commit run --all-files // install and initialize environment and run pre-commit

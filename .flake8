@@ -9,10 +9,19 @@ exclude =
     .venv
 filename = *.py
 accept-encodings = utf-8
-inline-quotes = single
 max-complexity = 12
 max-linenumber = 500
 max-line-length = 119
+
+inline-quotes = double
 multiline-quotes = double
+docstring-quotes = double
+avoid-escape = true
+
+literal-inline-quotes = double
+literal-multiline-quotes = double
+literal-docstring-quotes = double
+literal-avoid-escape = true
+
 per-file-ignores =
     core/backend/settings/templates/settings.dev.py:F821
