@@ -13,10 +13,8 @@ poetry env info
 poetry env info -p // path to virtual env
 potry env list // list all available virtual envs
 
-poetry shell // activate virtual env
+poetry shell // spawn shell within virtual env
 exit // exit virtual env
 deactivate // deactivate virtual env
 
 poetry run django-admin startproject backend .
-poetry run
-poetry run python manage.py runserver
