@@ -1,3 +1,14 @@
+import environ
+
+from core.backend.settings import BASE_DIR
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+environ.Env.read_env(BASE_DIR / ".env")
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -14,13 +25,13 @@ LOGGING = {
     "handlers": {
         "file": {
             "class": "logging.FileHandler",
-            "filename": "general.log",
-            "level": "DEBUG",
+            "filename": env("DJANGO_LOG_FILE"),
+            "level": env("DJANGO_LOG_LEVEL"),
             "formatter": "standard",
             "filters": [],
         },
         "console": {
-            "level": "DEBUG",
+            "level": env("DJANGO_LOG_LEVEL"),
             "class": "logging.StreamHandler",
             "formatter": "standard",
             "filters": [],
@@ -28,12 +39,12 @@ LOGGING = {
     },
     "loggers": {
         "": {
-            "level": "DEBUG",
+            "level": env("DJANGO_LOG_LEVEL"),
             "handlers": ["file", "console"],
         }
     },
     "root": {
-        "level": "DEBUG",
+        "level": env("DJANGO_LOG_LEVEL"),
         "handlers": ["file", "console"],
     },
 }
