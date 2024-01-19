@@ -28,3 +28,7 @@ install-pre-commit:
 .PHONY: lint
 lint:
 	poetry run pre-commit run --all-files
+
+.PHONY: up-deps-only
+up-deps-only:
+	docker compose -f docker-compose.dev.yaml up --force-recreate db
