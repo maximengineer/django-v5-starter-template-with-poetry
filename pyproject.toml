@@ -14,6 +14,7 @@ psycopg2 = "^2.9.9"
 django-filter = "^23.5"
 django-split-settings = "^1.2.0"
 pyyaml = "^6.0.1"
+django-environ = "^0.11.2"
 
 
 [tool.poetry.group.dev.dependencies]
