@@ -116,11 +116,11 @@ mkdir -p local
 sudo nano ./local/settings.prod.py
 
 DEBUG = False
-SECRET_KEY = 'django-insecure-=!%dlpgnc+4mk7+2h!l4&x^3)r+q4+=nz@y3k&e)8gg^gtgqkn'
-CSRF_TRUSTED_ORIGINS = ['https://penguinchess.net', 'https://www.penguinchess.net']
-AWS_ACCESS_KEY_ID = 'your-aws-access-key-id'
-AWS_SECRET_ACCESS_KEY = 'your-aws-secret-access-key'
-AWS_STORAGE_BUCKET_NAME = 'penguinchess-backend'
+SECRET_KEY = '-\*s@t&4wd#@qe%sq-z+tkvf79kky%&1zvy-)qc6-k5=&=dbnrx'
+CSRF_TRUSTED_ORIGINS = ['https://google.com', 'https://www.google.com']
+AWS_ACCESS_KEY_ID = 'AKIA3FLDYKHSWUPMSA56'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'django-template-backend'
 
 # start the containers
 docker-compose build
