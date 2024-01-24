@@ -29,6 +29,10 @@ install-pre-commit:
 lint:
 	poetry run pre-commit run --all-files
 
-.PHONY: up-deps-only
-up-deps-only:
+.PHONY: up-dev
+up-dev:
 	docker compose -f docker-compose.dev.yaml up --force-recreate db
+
+.PHONY: test
+test:
+	poetry run pytest -v -rs -n auto --show-capture=no
