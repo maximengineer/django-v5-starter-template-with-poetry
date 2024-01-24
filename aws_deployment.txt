@@ -107,8 +107,8 @@ ssh -i path-to-pem-file ubuntu@public_ip_v4_address
 Run the Application
 
 # clone your GitHub repository and deploy the application
-git clone https://github.com/thenewboston-developers/Cooking-Core.git
-cd Cooking-Core/
+git clone https://github.com/allhailpython/django-v4-starter-template-with-poetry.git
+cd django-v4-starter-template-with-poetry/
 test -f .env || touch .env
 
 # create your local settings file
@@ -116,10 +116,10 @@ mkdir -p local
 sudo nano ./local/settings.prod.py
 
 DEBUG = False
-SECRET_KEY = '-\*s@t&4wd#@qe%sq-z+tkvf79kky%&1zvy-)qc6-k5=&=dbnrx'
+SECRET_KEY = ''
 CSRF_TRUSTED_ORIGINS = ['https://google.com', 'https://www.google.com']
-AWS_ACCESS_KEY_ID = 'AKIA3FLDYKHSWUPMSA56'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY_ID = ''
+AWS_SECRET_ACCESS_KEY = ''
 AWS_STORAGE_BUCKET_NAME = 'django-template-backend'
 
 # start the containers
