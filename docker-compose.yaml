@@ -21,8 +21,8 @@ services:
     depends_on:
       - db
     environment:
-      BACKEND_SETTINGS_SETTING_DATABASES: '{"default":{"HOST":"db"}}'
-      BACKEND_SETTINGS_SETTING_LOCAL_SETTINGS_PATH: local/settings.prod.py
+      BACKEND_SETTINGS_DATABASES: '{"default":{"HOST":"db"}}'
+      BACKEND_SETTINGS_LOCAL_SETTINGS_PATH: local/settings.prod.py
 
 volumes:
   postgresql-data:
