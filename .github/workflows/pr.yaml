@@ -1,0 +1,36 @@
+name: Quality Assurance
+on: [pull_request, workflow_call]
+
+jobs:
+  quality-assurance:
+    name: Quality Assurance
+    runs-on: ubuntu-latest
+    container: python:3.12-slim-bullseye
+
+    services:
+      db:
+        image: postgres:16.1-alpine
+        env:
+          POSTGRES_DB: backend_db
+          POSTGRES_USER: backend_user
+          POSTGRES_PASSWORD: backend_password
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.7.1
+
+      - name: Install Dependencies
+        run: make install && make install-pre-commit
+
+      - name: Lint
+        run: make lint
+
+      - name: Test
+        run: make test
+        env:
+          BACKEND_SETTINGS_DATABASES: '{"default":{"HOST":"db"}}'
+          BACKEND_SETTINGS_LOCAL_SETTINGS_PATH: './core/backend/settings/templates/settings.github.py'
