@@ -1,3 +1,7 @@
+.PHONY: collectstatic
+collectstatic:
+	poetry run python -m core.manage collectstatic
+
 .PHONY: install
 install:
 	poetry install

@@ -103,6 +103,7 @@ wheels/
 __pycache__
 db.sqlite3
 media
+local-cdn
 
 # Environments
 .venv
