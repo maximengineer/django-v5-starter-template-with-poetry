@@ -17,3 +17,10 @@ Example how local settings could be used in core/backend/settings/templates/sett
 
 2. Example settings for unit testing can be found in core/backend/settings/templates/settings.unittest.py
    Copy that file settings.unittest.py to dir 'local' and make adjustments if needed.
+
+#####################
+
+To run locally
+
+make up-dev // start postgres in docker container
+make runserver
