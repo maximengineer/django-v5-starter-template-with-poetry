@@ -15,7 +15,7 @@ jobs:
     uses: ./.github/workflows/pr.yaml
 
   deploy:
-    name: Deploy to AWS
+    name: Deploy
     needs: quality-assurance
     runs-on: ubuntu-latest
     steps:
@@ -36,5 +36,6 @@ jobs:
             LogLevel ERROR
             StrictHostKeyChecking no
           END
-      - name: |
+      - name: Run Deploy
+        run: |
           ssh target "cd django_template/ && docker compose down && git pull && docker compose build && docker compose up -d --force-recreate"
