@@ -22,5 +22,12 @@ Example how local settings could be used in core/backend/settings/templates/sett
 
 To run locally
 
+poetry install --no-root
+
+set up settings according to SETTINGS
+
+create .env. Use .env.example as an example
+
 make up-dev // start postgres in docker container
+
 make runserver
