@@ -1,0 +1,75 @@
+# Git
+.git
+.gitignore
+.github
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+dist/
+build/
+*.egg
+.pytest_cache
+.mypy_cache
+.ruff_cache
+htmlcov/
+.coverage
+.coverage.*
+
+# Virtual environments
+.venv
+venv/
+ENV/
+env/
+
+# Local development
+local/*.py
+!local/__init__.py
+local-cdn/
+media/
+*.log
+*.sqlite3
+db.sqlite3
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation
+# Exclude development docs, keep production-relevant docs
+*.md
+!README.md
+!local/README.md
+docs/
+aws_deployment.txt
+
+# Poetry
+poetry.txt
+
+# Pre-commit
+.pre-commit-config.yaml
+
+# Editor config
+.editorconfig
+.flake8
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose*.yaml
+Dockerfile*
+!Dockerfile

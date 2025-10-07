@@ -1,48 +1,107 @@
 [tool.poetry]
 name = "django_template"
-version = "0.1.0"
-description = "Django v4.2 starter project"
+version = "0.2.0"
+description = "Django v5.2 starter project"
 authors = ["allhailpython <allhailpython@protonmail.com>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-django = "4.2.9"
+python = "^3.13"
+django = "^5.2.7"
 django-environ = "^0.11.2"
-django-filter = "^23.5"
-django-split-settings = "^1.2.0"
-djangorestframework = "^3.14.0"
-psycopg2-binary = "^2.9.9"
-pydantic = "^2.5.3"
-pynacl = "^1.5.0"
-pyyaml = "^6.0.1"
+django-filter = "^24.3"
+djangorestframework = "^3.15"
+psycopg = {extras = ["binary", "pool"], version = "^3.2"}
+pydantic = "^2.10"
+whitenoise = "^6.8"
+django-extensions = "^3.2"
+gunicorn = "^23.0"
+django-cors-headers = "^4.5"
+drf-spectacular = "^0.27"
+django-ratelimit = "^4.1"
+redis = "^5.2"
+django-redis = "^5.4"
+
+# Optional dependencies for S3 storage
+# Uncomment when you need S3 for production media files
+# django-storages = {extras = ["s3"], version = "^1.14"}
+# boto3 = "^1.35"
 
 [tool.poetry.group.dev.dependencies]
 colorlog = "^6.8.0"
-model-bakery = "^1.17.0"
-pre-commit = "^3.6.0"
-pytest = "^7.4.4"
-pytest-django = "^4.7.0"
-pytest-xdist = "^3.5.0"
+model-bakery = "^1.20"
+pre-commit = "^4.0"
+pytest = "^8.3"
+pytest-django = "^4.9"
+pytest-xdist = "^3.6"
+pytest-cov = "^6.0"
+ruff = "^0.8"
+django-debug-toolbar = "^4.4"
+faker = "^33.1"
+pytest-mock = "^3.14"
 
-[tool.isort]
-line_length = 119
-multi_line_output = 5
+[tool.ruff]
+line-length = 119
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "DJ",  # flake8-django
+]
+ignore = ["E501"]  # line too long (handled by formatter)
+
+[tool.ruff.lint.isort]
+known-first-party = ["core"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "backend.project.settings"
+DJANGO_SETTINGS_MODULE = "core.backend.settings.test"
 django_find_project = false
 python_files = "test_*.py"
-testpaths = ["backend"]
-filterwarnings = "ignore::DeprecationWarning:^(?!node\\.).*:"
+pythonpath = ["."]
+testpaths = ["core"]
+addopts = [
+    "-v",
+    "-rs",
+    "--strict-markers",
+    "--tb=short",
+    "--cov=core",
+    "--cov-branch",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
 
-[tool.yapf]
-align_closing_bracket_with_visual_indent = true
-based_on_style = "google"
-coalesce_brackets = true
-column_limit = 119
-dedent_closing_brackets = true
+[tool.coverage.run]
+source = ["core"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/__init__.py",
+    "*/conftest.py",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
 
 [build-system]
 requires = ["poetry-core"]

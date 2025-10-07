@@ -1,32 +1,21 @@
-import os.path
-from pathlib import Path
+"""
+Django settings router.
 
-from split_settings.tools import include, optional
+Set DJANGO_SETTINGS_MODULE to one of:
+- core.backend.settings.dev (default)
+- core.backend.settings.prod
+- core.backend.settings.test
 
-from core.backend.settings.base import SECRET_KEY
-from core.general.utils.pytest import is_pytest_running
+Or use the shortcut: set DJANGO_ENV=prod and this will route to the correct module.
+"""
+import os
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+# Allow shortcut: DJANGO_ENV=prod instead of full module path
+env = os.environ.get("DJANGO_ENV", "dev")
 
-ENV_VAR_SETTINGS_PREFIX = "BACKEND_SETTINGS_"
-
-LOCAL_SETTINGS_PATH = os.getenv(f"{ENV_VAR_SETTINGS_PREFIX}LOCAL_SETTINGS")
-
-if not LOCAL_SETTINGS_PATH:
-    LOCAL_SETTINGS_PATH = f'local/settings{".unittests" if is_pytest_running() else ".dev"}.py'
-
-# make LOCAL_SETTINGS_PATH absolute if relative path
-if not os.path.isabs(LOCAL_SETTINGS_PATH):
-    LOCAL_SETTINGS_PATH = str(BASE_DIR / LOCAL_SETTINGS_PATH)
-
-include(
-    "base.py",
-    "logging.py",
-    "custom.py",
-    optional(LOCAL_SETTINGS_PATH),
-    "env_vars.py",
-    "docker.py",
-)
-
-if not is_pytest_running():
-    assert SECRET_KEY is not NotImplemented
+if env == "prod":
+    from .prod import *  # noqa: F403, F401
+elif env == "test":
+    from .test import *  # noqa: F403, F401
+else:  # dev is default
+    from .dev import *  # noqa: F403, F401

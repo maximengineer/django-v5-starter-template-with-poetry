@@ -5,32 +5,83 @@ jobs:
   quality-assurance:
     name: Quality Assurance
     runs-on: ubuntu-latest
-    container: python:3.12-slim-bullseye
 
     services:
-      db:
-        image: postgres:16.1-alpine
+      postgres:
+        image: postgres:18-alpine
         env:
           POSTGRES_DB: backend_db
           POSTGRES_USER: backend_user
           POSTGRES_PASSWORD: backend_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          poetry-version: 1.7.1
+          python-version: '3.13'
+          cache: 'poetry'
 
-      - name: Install Dependencies
-        run: make install && make install-pre-commit
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.4
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
-      - name: Lint
-        run: make lint
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
-      - name: Test
-        run: make test
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
+      - name: Install pre-commit hooks
+        run: poetry run pre-commit install
+
+      - name: Lint with Ruff
+        run: poetry run ruff check .
+
+      - name: Format check with Ruff
+        run: poetry run ruff format --check .
+
+      - name: Django System Checks
+        run: poetry run python -m core.manage check --deploy
         env:
-          BACKEND_SETTINGS_DATABASES: '{"default":{"HOST":"db"}}'
-          BACKEND_SETTINGS_LOCAL_SETTINGS_PATH: './core/backend/settings/templates/settings.github.py'
+          DJANGO_ENV: prod
+          SECRET_KEY: test-key-for-ci-checks-only-not-for-production-use-min-50-chars
+          ALLOWED_HOSTS: localhost,127.0.0.1
+          POSTGRES_HOST: localhost
+          POSTGRES_DB: backend_db
+          POSTGRES_USER: backend_user
+          POSTGRES_PASSWORD: backend_password
+
+      - name: Check for missing migrations
+        run: poetry run python -m core.manage makemigrations --check --dry-run
+        env:
+          DJANGO_ENV: test
+
+      - name: Run tests with coverage
+        run: poetry run pytest -v -n auto --cov=core --cov-report=xml --cov-report=term
+        env:
+          DJANGO_ENV: test
+          POSTGRES_HOST: localhost
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}

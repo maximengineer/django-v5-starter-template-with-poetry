@@ -1,0 +1,2 @@
+# This file preserves the local/ directory in git
+# The directory itself is needed, but *.py files inside are gitignored

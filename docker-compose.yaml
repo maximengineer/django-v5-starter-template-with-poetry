@@ -1,17 +1,48 @@
-version: '3.9'
+# Production Docker Compose Configuration
+# - Persists media files and static files via volumes
+# - Includes PostgreSQL with pg_stat_statements for query analysis
+# - Optional Redis cache (configure in settings to enable)
+# - Health checks for all services
 
 services:
   db:
-    image: postgres:16.1-alpine
+    image: postgres:18-alpine
     restart: unless-stopped
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_DB: backend_db
-      POSTGRES_USER: backend_user
-      POSTGRES_PASSWORD: backend_password
+      POSTGRES_DB: ${POSTGRES_DB:-backend_db}
+      POSTGRES_USER: ${POSTGRES_USER:-backend_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-backend_password}
     volumes:
       - postgresql-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-backend_user} -d ${POSTGRES_DB:-backend_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.track=all"
+
+  # Redis - Optional cache/session backend
+  # To enable: Set REDIS_URL in .env and configure Django caching in prod.py
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build: .
@@ -19,11 +50,26 @@ services:
     ports:
       - '8000:8000'
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      BACKEND_SETTINGS_DATABASES: '{"default":{"HOST":"db"}}'
-      BACKEND_SETTINGS_LOCAL_SETTINGS_PATH: local/settings.prod.py
+      DJANGO_ENV: prod
+      POSTGRES_HOST: db
+      REDIS_URL: redis://redis:6379/0
+    env_file:
+      - .env
+    volumes:
+      - ./media:/opt/project/media
+      - ./local-cdn:/opt/project/local-cdn
+    healthcheck:
+      test: ["CMD", "python", "/app/scripts/docker-healthcheck.py"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
 
 volumes:
   postgresql-data:
+    driver: local
+  redis-data:
     driver: local
