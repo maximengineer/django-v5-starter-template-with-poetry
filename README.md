@@ -2,6 +2,31 @@
 
 A modern, production-ready Django 5.2 starter template with best practices built-in.
 
+**Perfect for:** Building web applications, REST APIs, SaaS products, or any Django-based project. This template provides a solid foundation with authentication, database setup, API documentation, and deployment configuration already configured.
+
+**What you get:** A fully configured Django project with PostgreSQL database, REST API with documentation, Docker support, automated testing, and production deployment ready.
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [What's Next?](#whats-next)
+- [Settings Configuration](#settings-configuration)
+- [Available Commands](#available-commands)
+- [Docker Deployment](#docker-deployment)
+- [Health Check](#health-check)
+- [Testing](#testing)
+- [Code Quality](#code-quality)
+- [Django 5.2 Features & Best Practices](#django-52-features--best-practices)
+- [Project Structure](#project-structure)
+- [Production Deployment](#production-deployment)
+- [Security](#security)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+
 ## Features
 
 ### Core Framework
@@ -57,9 +82,31 @@ A modern, production-ready Django 5.2 starter template with best practices built
 
 ### Prerequisites
 
-- Python 3.13+
-- Poetry 1.8+
-- Docker & Docker Compose (for local database)
+**New to Django?** No problem! Here's what you need to install:
+
+1. **Python 3.13+** - Download from [python.org](https://www.python.org/downloads/)
+   ```bash
+   # Check your Python version
+   python --version  # or python3 --version
+   ```
+
+2. **Poetry** - Python dependency manager ([installation guide](https://python-poetry.org/docs/#installation))
+   ```bash
+   # Install Poetry (Linux/macOS/Windows)
+   curl -sSL https://install.python-poetry.org | python3 -
+
+   # Verify installation
+   poetry --version
+   ```
+
+3. **Docker Desktop** - For running PostgreSQL locally ([download here](https://www.docker.com/products/docker-desktop/))
+   ```bash
+   # Verify installation
+   docker --version
+   docker compose version
+   ```
+
+**Alternative:** If you don't want to use Docker, you can install PostgreSQL directly on your system, but Docker is recommended for easier setup.
 
 ### Installation
 
@@ -77,7 +124,17 @@ A modern, production-ready Django 5.2 starter template with best practices built
 3. **Set up environment variables**
    ```bash
    cp .env.example .env
-   # Edit .env with your settings
+   ```
+
+   The `.env` file contains important settings. For local development, the defaults work fine. Key settings:
+   - `DJANGO_ENV=dev` - Use development settings
+   - `DEBUG=True` - Show detailed error pages
+   - `POSTGRES_HOST=localhost` - Database is running on your machine
+   - `SECRET_KEY` - Optional in dev (auto-generated with a warning)
+
+   **Tip:** You can generate a secure SECRET_KEY anytime with:
+   ```bash
+   poetry run python -m core.manage generate_secret_key
    ```
 
 4. **Start PostgreSQL**
@@ -90,7 +147,7 @@ A modern, production-ready Django 5.2 starter template with best practices built
    make migrate
    ```
 
-6. **Create superuser** (optional)
+6. **Create superuser**
    ```bash
    make superuser
    ```
@@ -100,7 +157,62 @@ A modern, production-ready Django 5.2 starter template with best practices built
    make runserver
    ```
 
-Visit http://localhost:8000
+   The server will start at http://localhost:8000
+
+### What's Next?
+
+**Explore your new Django application:**
+
+1. **Home Page** - http://localhost:8000
+   - Basic welcome page (customize in `core/templates/home.html`)
+
+2. **Admin Interface** - http://localhost:8000/admin/
+   - Log in with the superuser you created
+   - Manage users, groups, and sessions
+
+3. **API Documentation** - http://localhost:8000/api/schema/swagger-ui/
+   - Interactive API documentation (Swagger UI)
+   - Try out API endpoints directly in your browser
+   - Alternative: http://localhost:8000/api/schema/redoc/ (ReDoc view)
+
+4. **Health Check** - http://localhost:8000/health/
+   - Monitor application status and database connectivity
+   - Returns JSON: `{"status": "healthy", "database": "connected", "version": "5.2"}`
+
+**Start Building:**
+
+- Add your models in `core/backend/models.py`
+- Create API views in `core/backend/views.py`
+- Add templates in `core/templates/`
+- Write tests in `core/backend/tests/`
+
+**Common Commands:**
+
+```bash
+# Create database migrations after model changes
+make migrations
+
+# Apply migrations to database
+make migrate
+
+# Run tests
+make test
+
+# Run tests with coverage report
+make test-cov
+
+# Format code
+make format
+
+# Run linter
+make lint
+
+# Open Django shell (with shell_plus if available)
+make shell
+
+# Create test data (admin user + 10 test users)
+make test-data
+```
 
 ## Settings Configuration
 
@@ -408,6 +520,173 @@ Django system checks will warn you about any security issues when you run:
 ```bash
 python -m core.manage check --deploy
 ```
+
+## Troubleshooting
+
+### Common Issues for Beginners
+
+#### "poetry: command not found"
+
+Poetry is not installed or not in your PATH.
+
+**Solution:**
+```bash
+# Install Poetry
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Add to PATH (add this to your ~/.bashrc or ~/.zshrc)
+export PATH="$HOME/.local/bin:$PATH"
+
+# Reload shell
+source ~/.bashrc  # or source ~/.zshrc
+```
+
+#### "docker: command not found" or "Cannot connect to Docker daemon"
+
+Docker is not installed or not running.
+
+**Solution:**
+1. Install Docker Desktop from https://www.docker.com/products/docker-desktop/
+2. Start Docker Desktop
+3. Verify: `docker --version`
+
+#### "make: command not found" (Windows)
+
+Windows doesn't have `make` by default.
+
+**Solution - Option 1 (Recommended):** Use Poetry directly:
+```bash
+# Instead of: make migrate
+poetry run python -m core.manage migrate
+
+# Instead of: make runserver
+poetry run python -m core.manage runserver
+
+# Instead of: make test
+poetry run pytest
+```
+
+**Solution - Option 2:** Install `make` for Windows:
+- Install via Chocolatey: `choco install make`
+- Or use WSL2 (Windows Subsystem for Linux)
+
+#### Database connection errors: "connection refused" or "could not connect to server"
+
+PostgreSQL is not running or connection settings are wrong.
+
+**Solution:**
+```bash
+# Check if PostgreSQL container is running
+docker ps
+
+# If not running, start it
+make up-dev
+
+# Check connection settings in .env
+# For local dev: POSTGRES_HOST=localhost
+# For Docker prod: POSTGRES_HOST=db
+```
+
+#### "ModuleNotFoundError" or "No module named 'django'"
+
+Dependencies are not installed or wrong Python environment.
+
+**Solution:**
+```bash
+# Install dependencies
+poetry install --no-root
+
+# Verify Poetry is using correct Python version
+poetry env info
+
+# If needed, recreate virtual environment with Python 3.13
+poetry env use python3.13
+poetry install --no-root
+```
+
+#### "SECRET_KEY" warnings in development
+
+This is expected! The default development SECRET_KEY shows a warning to remind you to set your own.
+
+**Solution (optional):**
+```bash
+# Generate a secure key
+poetry run python -m core.manage generate_secret_key
+
+# Add to .env file
+SECRET_KEY=<generated-key-here>
+```
+
+#### Port 8000 already in use
+
+Another application is using port 8000.
+
+**Solution:**
+```bash
+# Find what's using port 8000
+lsof -i :8000  # macOS/Linux
+netstat -ano | findstr :8000  # Windows
+
+# Kill the process or use a different port
+poetry run python -m core.manage runserver 8001
+```
+
+#### Tests failing with database errors
+
+Test database permissions or configuration issue.
+
+**Solution:**
+```bash
+# Tests use in-memory SQLite by default (no PostgreSQL needed)
+# If still failing, try:
+poetry run pytest -v  # Verbose output to see exact error
+
+# Clear pytest cache
+rm -rf .pytest_cache
+poetry run pytest
+```
+
+#### Static files not loading (CSS/JS missing)
+
+Static files haven't been collected.
+
+**Solution:**
+```bash
+# Development: Static files are served automatically
+# Just run: make runserver
+
+# Production: Collect static files
+make collectstatic
+# Or: poetry run python -m core.manage collectstatic
+```
+
+#### "django.core.exceptions.ImproperlyConfigured"
+
+Settings configuration error, usually missing environment variables.
+
+**Solution:**
+```bash
+# Check your .env file exists
+ls -la .env
+
+# Verify DJANGO_ENV is set
+cat .env | grep DJANGO_ENV
+
+# For production, ensure all required variables are set:
+# - SECRET_KEY (50+ characters)
+# - ALLOWED_HOSTS
+# - Database credentials
+# - REDIS_URL
+```
+
+### Getting Help
+
+- **Django Documentation**: https://docs.djangoproject.com/en/5.2/
+- **Django Tutorial**: https://docs.djangoproject.com/en/5.2/intro/tutorial01/
+- **Poetry Documentation**: https://python-poetry.org/docs/
+- **Docker Documentation**: https://docs.docker.com/get-started/
+
+**Still stuck?** Check the error message carefully - Django's error pages in DEBUG mode are very helpful and usually tell you exactly what's wrong!
 
 ## Contributing
 
