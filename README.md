@@ -286,30 +286,68 @@ make pre-commit
 
 ## Production Deployment
 
-1. **Set environment variables**
-   - `DJANGO_ENV=prod` - Use production settings
-   - `SECRET_KEY` - Django secret key (50+ characters)
-   - `ALLOWED_HOSTS` - Comma-separated domains
-   - `CSRF_TRUSTED_ORIGINS` - Comma-separated HTTPS origins
-   - Database credentials
-   - `REDIS_URL` - Redis connection URL (optional, for caching)
-   - `USE_S3=True` - Enable S3 for media files (optional)
-   - AWS credentials (if using S3)
+### Required Environment Variables
 
-2. **Build and deploy**
-   ```bash
-   docker compose build
-   docker compose up -d
-   ```
+Create a `.env` file with the following settings:
 
-3. **Verify deployment**
-   ```bash
-   # Check health endpoint
-   curl http://localhost:8000/health/
+```bash
+# Core Settings
+DJANGO_ENV=prod
+DEBUG=False
 
-   # Run system checks
-   docker compose exec app python -m core.manage check --deploy
-   ```
+# SECRET_KEY - REQUIRED (50+ characters, use generate_secret_key command)
+SECRET_KEY=your-long-random-secret-key-here-at-least-50-characters
+
+# Domains - REQUIRED
+ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+
+# Database - REQUIRED
+POSTGRES_DB=your_db_name
+POSTGRES_USER=your_db_user
+POSTGRES_PASSWORD=your_secure_password
+POSTGRES_HOST=db  # or your database host
+POSTGRES_PORT=5432
+
+# Redis Cache - REQUIRED (avoids production warnings)
+REDIS_URL=redis://redis:6379/0  # or your Redis host
+
+# Security - REQUIRED for HTTPS deployments
+CSRF_TRUSTED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+SECURE_SSL_REDIRECT=True
+SECURE_HSTS_SECONDS=31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+SECURE_HSTS_PRELOAD=True
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+USE_HTTPS=True
+
+# Optional: AWS S3 for media files
+# USE_S3=True
+# AWS_ACCESS_KEY_ID=your-access-key
+# AWS_SECRET_ACCESS_KEY=your-secret-key
+# AWS_STORAGE_BUCKET_NAME=your-bucket-name
+# AWS_S3_REGION_NAME=us-east-1
+```
+
+### Build and Deploy
+
+```bash
+# Build images
+docker compose build
+
+# Deploy
+docker compose up -d
+```
+
+### Verify Deployment
+
+```bash
+# Check health endpoint
+curl https://yourdomain.com/health/
+
+# Run system checks (should have no errors)
+docker compose exec app python -m core.manage check --deploy
+```
 
 ### Zero-Downtime Deployments
 
@@ -354,17 +392,22 @@ See production settings in `core/backend/settings/prod.py` for all available con
 
 ## Security
 
-Production security settings are enabled in `core/backend/settings/prod.py`:
+Production security settings in `core/backend/settings/prod.py`:
 
-- HTTPS redirect
-- HSTS headers (1 year)
-- Secure cookies
-- CSRF protection
-- CORS configuration
-- Rate limiting
-- Django system checks for security validation
+- **HTTPS redirect** - Configurable via `SECURE_SSL_REDIRECT` (default: False for local testing)
+- **HSTS headers** - Configurable via `SECURE_HSTS_SECONDS` (default: 0)
+- **Secure cookies** - Configurable via `SESSION_COOKIE_SECURE` and `CSRF_COOKIE_SECURE`
+- **CSRF protection** - Set `CSRF_TRUSTED_ORIGINS` for your domains
+- **CORS configuration** - Set `CORS_ALLOWED_ORIGINS` for your frontend
+- **Rate limiting** - Enabled by default with django-ratelimit
+- **Redis cache** - Set `REDIS_URL` to enable Redis caching (recommended for production)
 
-All security settings are configured with safe defaults and can be customized via environment variables.
+**Important:** The security settings default to disabled for local testing. Enable them in production by setting the environment variables in your `.env` file as shown in the [Production Deployment](#production-deployment) section.
+
+Django system checks will warn you about any security issues when you run:
+```bash
+python -m core.manage check --deploy
+```
 
 ## Contributing
 

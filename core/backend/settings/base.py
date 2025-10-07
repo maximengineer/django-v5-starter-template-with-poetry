@@ -1,4 +1,8 @@
 from pathlib import Path
+import environ
+
+# Initialize environment variables
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # Note: When using split-settings, BASE_DIR might already be defined in __init__.py
@@ -66,11 +70,11 @@ WSGI_APPLICATION = "core.backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "backend_db",
-        "USER": "backend_user",
-        "PASSWORD": "backend_password",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": env("POSTGRES_DB", default="backend_db"),
+        "USER": env("POSTGRES_USER", default="backend_user"),
+        "PASSWORD": env("POSTGRES_PASSWORD", default="backend_password"),
+        "HOST": env("POSTGRES_HOST", default="localhost"),
+        "PORT": env("POSTGRES_PORT", default="5432"),
         "ATOMIC_REQUESTS": True,
         "CONN_MAX_AGE": 600,  # Keep connections alive for 10 minutes
         "CONN_HEALTH_CHECKS": True,  # Validate connections before reuse
