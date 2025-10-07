@@ -688,17 +688,6 @@ cat .env | grep DJANGO_ENV
 
 **Still stuck?** Check the error message carefully - Django's error pages in DEBUG mode are very helpful and usually tell you exactly what's wrong!
 
-## Contributing
-
-1. Install pre-commit hooks: `make pre-commit`
-2. Run tests: `make test`
-3. Format code: `make format`
-4. Check code quality: `make lint`
-
 ## License
 
 MIT
-
-## Support
-
-For detailed upgrade information, see `UPGRADE_PLAN.md`.
